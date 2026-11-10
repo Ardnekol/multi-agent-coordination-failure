@@ -1,11 +1,15 @@
-import os
-os.environ["DB_PATH"] = "test.db"
+"""End-to-end smoke tests: one mock run per fault, checking the headline failure is detected.
+
+These use the deterministic mock agents, so they verify the pipeline (orchestrator, fault
+injection, detector, scoring, storage), not the behaviour of real models.
+"""
 from app.orchestrator import run_task
 
 TASK = "Explain how solar panels work"
 
 
 def types(run):
+    """The set of failure types detected in a run record."""
     return {f["type"] for f in run["failures"]}
 
 
