@@ -85,7 +85,7 @@ flowchart LR
 
 Project layout:
 ```
-multi_agent_app/
+multi-agent-coordination-failure/
 ├── app/
 │   ├── main.py               FastAPI app (entry point for uvicorn)
 │   ├── orchestrator.py       the planner -> executor -> reviewer loop
@@ -268,7 +268,7 @@ Requirements: Python 3.10 or newer.
 
 **Windows (PowerShell)**
 ```powershell
-cd multi_agent_app
+cd multi-agent-coordination-failure
 python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
@@ -277,13 +277,13 @@ copy .env.example .env          # only needed for live mode; then fill in the ke
 
 **macOS / Linux**
 ```bash
-cd multi_agent_app
+cd multi-agent-coordination-failure
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env            # only needed for live mode; then fill in the keys
 ```
 
-**Run** (two terminals, both inside `multi_agent_app` with the virtual environment active):
+**Run** (two terminals, both in the project folder with the virtual environment active):
 ```bash
 uvicorn app.main:app --reload            # terminal 1: API at http://127.0.0.1:8000 (docs at /docs)
 streamlit run frontend/streamlit_app.py  # terminal 2: dashboard opens in the browser
@@ -299,7 +299,7 @@ Mock mode is the default and needs no API keys, so the project always demos.
 
 ## 11. Configuration
 
-Settings are read from environment variables, or from a `.env` file in `multi_agent_app/`.
+Settings are read from environment variables, or from a `.env` file in the project folder.
 They are read once at startup, so restart the API after changing them.
 
 | Variable | Purpose | Default |
@@ -446,7 +446,7 @@ evidence about LLM behaviour.
 
 | Problem | Cause and fix |
 |---|---|
-| `ModuleNotFoundError: No module named 'app'` | Run commands from inside `multi_agent_app/`. |
+| `ModuleNotFoundError: No module named 'app'` | Run commands from the project folder (the one containing `app/` and `README.md`). |
 | Dashboard shows a connection error | The API isn't running. Start `uvicorn app.main:app` first. |
 | `400 live mode needs API keys for: …` | Add the listed keys to `.env` and restart the API, or allow mock fallback. |
 | Live runs show `AGENT_CRASH` | Read the message detail: usually an invalid key, no credit, or a retired model name (see section 11). |

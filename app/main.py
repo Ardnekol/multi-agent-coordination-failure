@@ -1,6 +1,6 @@
 """FastAPI backend: the HTTP interface to the lab.
 
-Start it with `uvicorn app.main:app --reload` from the multi_agent_app folder; interactive API
+Start it with `uvicorn app.main:app --reload` from the project folder; interactive API
 docs are then at http://127.0.0.1:8000/docs. The Streamlit UI is just a client of these
 endpoints, so anything the UI does can also be scripted with plain HTTP requests.
 
