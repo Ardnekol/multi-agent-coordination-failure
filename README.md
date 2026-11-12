@@ -3,7 +3,9 @@
 Final-year project: a framework that **orchestrates multiple LLM agents, injects faults, detects
 coordination failures, and scores how well the agents cooperate.**
 
-Three agents from three different providers (OpenAI, Gemini, Claude) work on a task together.
+Three agents work on a task together. By default all three are Claude models of different sizes:
+**Opus 5.5 plans, Sonnet 5.5 executes, Haiku 5.5 reviews**, so one Anthropic API key is enough.
+Any agent can be switched to OpenAI or Gemini in `.env`.
 The lab deliberately corrupts the messages they pass to each other, records every message,
 automatically detects nine kinds of coordination failure, and turns them into a score from 0 to
 100. Everything is stored in SQLite and shown in a Streamlit dashboard.
@@ -48,7 +50,7 @@ This project makes them observable, reproducible and quantifiable.
 | **Failure** | A coordination problem the detector finds in the conversation, with a severity from 1 to 5. |
 | **Score** | `100 − 5 × (sum of severities)`, never below 0. |
 | **Mock mode** | Fake, rule-based agents. No API keys, same output every time. |
-| **Live mode** | Real OpenAI, Gemini and Claude API calls. |
+| **Live mode** | Real API calls (Claude by default; OpenAI or Gemini if configured). |
 
 The research question the lab supports: *when communication between agents breaks, which
 failures appear, how badly does cooperation degrade, and do real models recover?*
@@ -59,10 +61,10 @@ failures appear, how badly does cooperation degrade, and do real models recover?
 flowchart LR
     UI[Streamlit dashboard] -- HTTP --> API[FastAPI backend]
     API --> ORC[Orchestrator]
-    ORC --> P[Planner<br/>OpenAI]
+    ORC --> P[Planner<br/>Claude Opus 5.5]
     P -- plan --> FI{{Fault injector}}
-    FI -- possibly corrupted plan --> E[Executor<br/>Gemini]
-    E -- result --> R[Reviewer<br/>Claude]
+    FI -- possibly corrupted plan --> E[Executor<br/>Claude Sonnet 5.5]
+    E -- result --> R[Reviewer<br/>Claude Haiku 5.5]
     R -- REJECTED + reason --> P
     ORC -- every message --> DB[(SQLite)]
     ORC -- finished conversation --> D[Failure detector<br/>+ scoring]
@@ -75,7 +77,7 @@ flowchart LR
 | API | `app/main.py` | HTTP endpoints, input validation. |
 | Orchestrator | `app/orchestrator.py` | Runs the agent loop, applies faults, decides run mode and fault outcome. |
 | Agents | `app/agents.py` | Role → provider mapping and system prompts. |
-| LLM clients | `app/llm_clients.py` | One `call()` in front of OpenAI, Gemini, Claude and the mocks. |
+| LLM clients | `app/llm_clients.py` | One `call()` in front of Claude, OpenAI, Gemini and the mocks. |
 | Mock agents | `app/mock_llm.py` | Deterministic fake agents for demos and tests. |
 | Fault injector | `app/fault_injection.py` | The five fault modes. |
 | Verdict parser | `app/protocol.py` | Turns the reviewer's reply into APPROVED / REJECTED / none. |
@@ -96,7 +98,9 @@ multi-agent-coordination-failure/
 │   ├── protocol.py           reviewer verdict parsing
 │   ├── failure_detector.py   failure rules + score
 │   ├── database.py           SQLite persistence
+│   ├── seed.py               export/import of shared run history
 │   └── config.py             settings
+├── data/sample_runs.json     shared run history (loaded into an empty database)
 ├── frontend/streamlit_app.py dashboard
 ├── .streamlit/config.toml    dashboard theme
 ├── tests/                    pytest suite (see section 15)
@@ -106,8 +110,8 @@ multi-agent-coordination-failure/
 
 ## 4. How one run works
 
-1. **Start.** `POST /runs` reaches `run_task()`. In live mode it first checks that all three
-   API keys exist (see [section 9](#9-run-mode-and-fault-outcome)). A row is created in `runs`
+1. **Start.** `POST /runs` reaches `run_task()`. In live mode it first checks that every
+   provider in use has an API key (see [section 9](#9-run-mode-and-fault-outcome)). A row is created in `runs`
    with status `running`.
 2. **Planner.** Receives `Task: <task>`. From round 2 on it also receives
    `Reviewer feedback to address: <last rejection>`. It returns three numbered subtasks.
@@ -148,15 +152,30 @@ mode `mock`, fault outcome `effective`.
 
 ## 5. The agents and their protocol
 
-| Role | Provider | Input | Required output format |
+| Role | Default model | Input | Required output format |
 |---|---|---|---|
-| Planner | OpenAI | task (+ last rejection) | `SUBTASKS:` then `1. …`, `2. …`, `3. …` |
-| Executor | Gemini | task + plan | one line per subtask: `Step N: <result>` |
-| Reviewer | Claude | task + executor output | `APPROVED: <reason>` or `REJECTED: <reason>` |
+| Planner | `claude-opus-5-5` | task (+ last rejection) | `SUBTASKS:` then `1. …`, `2. …`, `3. …` |
+| Executor | `claude-sonnet-5-5` | task + plan | one line per subtask: `Step N: <result>` |
+| Reviewer | `claude-haiku-5-5` | task + executor output | `APPROVED: <reason>` or `REJECTED: <reason>` |
 
-Each role uses a different provider on purpose: models from different vendors follow
-formatting instructions differently, so mismatches between them are more likely, and
-those mismatches are exactly what the lab studies.
+**Why three different models?** A real agent team is rarely made of identical agents. Using
+three sizes of the same family (largest plans, mid-size does the work, smallest checks) creates
+capability gaps between the agents, so they interpret instructions differently, and those
+mismatches are what the lab studies. Keeping one vendor also means one API key and one billing
+account. To compare vendors instead, set `<ROLE>_PROVIDER` in `.env` (see
+[section 11](#11-configuration)); for example, the original setup was an OpenAI planner, a
+Gemini executor and a Claude reviewer.
+
+**Claude call details** (`app/llm_clients.py`):
+- Current Claude models think before answering, so a reply can contain `thinking` blocks
+  before the text; the client keeps only the `text` blocks.
+- `max_tokens` is 16000, because thinking counts toward the limit and a small value could cut
+  an answer off. Short answers still only use what they need.
+- No `temperature` is sent; current Claude models reject non-default sampling settings.
+- If a model **refuses** a request, the message is recorded as `AGENT_CRASH` with the refusal
+  category. On Opus and Sonnet, the API first retries the request on a fallback model
+  (`CLAUDE_FALLBACK=1`, the default); set `CLAUDE_FALLBACK=0` if you want every answer to come
+  from exactly the configured model.
 
 The formats above are a **protocol** that the code relies on:
 - The detector finds subtasks with the regex `^\d+\.\s*(.+)$` (lines starting with `1.`, `2.`, …).
@@ -305,13 +324,22 @@ They are read once at startup, so restart the API after changing them.
 
 | Variable | Purpose | Default |
 |---|---|---|
-| `OPENAI_API_KEY` | planner in live mode | empty |
-| `GEMINI_API_KEY` | executor in live mode | empty |
-| `ANTHROPIC_API_KEY` | reviewer in live mode | empty |
-| `OPENAI_MODEL` | OpenAI model name | `gpt-4o-mini` |
-| `GEMINI_MODEL` | Gemini model name | `gemini-2.0-flash` |
-| `CLAUDE_MODEL` | Claude model name | `claude-sonnet-5-5` |
+| `ANTHROPIC_API_KEY` | every agent whose provider is `claude` (all three by default) | empty |
+| `OPENAI_API_KEY` | agents whose provider is `openai` | empty |
+| `GEMINI_API_KEY` | agents whose provider is `gemini` | empty |
+| `PLANNER_PROVIDER` / `PLANNER_MODEL` | planner's provider and model | `claude` / `claude-opus-5-5` |
+| `EXECUTOR_PROVIDER` / `EXECUTOR_MODEL` | executor's provider and model | `claude` / `claude-sonnet-5-5` |
+| `REVIEWER_PROVIDER` / `REVIEWER_MODEL` | reviewer's provider and model | `claude` / `claude-haiku-5-5` |
+| `OPENAI_MODEL` | model used when a role is set to `openai` without its own model | `gpt-4o-mini` |
+| `GEMINI_MODEL` | model used when a role is set to `gemini` without its own model | `gemini-2.0-flash` |
+| `CLAUDE_EFFORT` | optional Claude effort: `low`, `medium`, `high`, `xhigh`, `max` | each model's default |
+| `CLAUDE_FALLBACK` | `1` = refusals on Opus/Sonnet are retried on a fallback model | `1` |
 | `DB_PATH` | SQLite database file | `coordination.db` |
+
+Providers are `claude`, `openai` or `gemini`; anything else stops the API at startup with a
+clear error. `GET /agents` (and the dashboard header) shows which model each role is using.
+Example: the original three-vendor setup is `PLANNER_PROVIDER=openai`,
+`EXECUTOR_PROVIDER=gemini`, `REVIEWER_PROVIDER=claude` (needs all three keys).
 
 Providers rename and retire models over time. If live runs return `AGENT_CRASH` with a
 "model not found" error, set the model variable to a current name from that provider's docs.
@@ -320,34 +348,63 @@ Never commit `.env`: it contains your keys and is listed in `.gitignore`.
 ## 12. Using the dashboard
 
 A dark, card-based dashboard built with Streamlit. The theme is set in `.streamlit/config.toml`.
-The header shows the agent pipeline (Planner → fault injection → Executor → Reviewer).
+The header shows the agent team: each agent's role, the exact model it runs on (from
+`GET /agents`) and what it does, with the fault-injection point between planner and executor.
+Hover over any badge or failure tag to see what it means.
 
 **Sidebar**
 - **Backend status**: a green dot when the API is reachable. When it's offline, the page says
   how to start it and the Run button is disabled.
-- **Task**: what the agents should do (5–500 characters).
-- **Fault to inject**: one of the five fault modes, with a one-line explanation under it.
+- **Task**: a picker with ready-made AI/ML tasks, or "Write my own task". Choosing one fills
+  the editable task box. The presets:
+
+  | Area | Task |
+  |---|---|
+  | Multi-agent | Design a planner–coder–tester LLM team that writes and tests a Python function (default) |
+  | Multi-agent | Explain how multi-agent LLM systems fail and propose a safeguard for each failure |
+  | LLM | Explain how Retrieval-Augmented Generation (RAG) reduces hallucination |
+  | LLM | Design an evaluation plan for hallucination in a support chatbot |
+  | LLM | Explain self-attention in a Transformer, step by step |
+  | ML | Explain overfitting vs underfitting: detection and fixes |
+  | ML | Compare SGD, momentum and Adam optimizers |
+  | ML | Outline a fine-tuning pipeline for sentiment classification |
+
+  Each task uses distinctive technical vocabulary, which gives the keyword-based drift check
+  something meaningful to match.
+- **Fault to inject**: one of the five fault modes. Under it, the page explains what the fault
+  does, which real-world problem it imitates, and which failures it usually causes.
 - **Fault active for rounds**: `fault_rounds`, from 0 to 3.
 - **Max rounds**: `max_rounds`, from 1 to 5.
 - **Use live LLM APIs**: off = mock agents, on = real APIs.
 - **Allow mock fallback**: in live mode, lets agents without a key run as mocks (`mixed` run).
 
 **Latest run tab**
-- Badges for status, mode, fault and fault outcome.
-- Four stat cards: score (coloured green / amber / red, with a bar), failures detected,
-  rounds used, and total latency.
+- The task, and badges for status, mode, fault and fault outcome.
+- **What happened**: a plain-language summary: where the fault hit, each round's verdict and
+  failures, whether the team recovered, and how the score was calculated.
+- Four stat cards: score with a meaning label ("healthy", "minor issues", "degraded",
+  "broke down") and a comparison with the **no-fault baseline** (the average of earlier
+  no-fault runs in the same mode), failures, rounds used out of the maximum, and total latency.
+- A **round strip**: one chip per round showing approved or rejected, and whether the fault was active.
 - **Conversation**: every message as a card grouped by round, colour-coded by role
   (planner violet, executor cyan, reviewer amber). Failures appear as tags on the message that
-  caused them, and a dashed note marks each plan that was corrupted by the fault.
-- **Detected failures**: sorted by severity, with the score calculation written out.
+  caused them, and a dashed note shows exactly how the plan was corrupted before the executor got it.
+- **Detected failures**: sorted by severity, each with its severity level, what it means, and
+  the step and round where it happened.
+- Mock runs show a reminder that their results are scripted.
 
-**History tab**: a table of the last 100 runs with a score bar per run. Pick any run from the
-dropdown to see its full record.
+**History tab**: a table of the last 100 runs (including the fault rounds) with a score bar per
+run. Pick any run to see its full record, with the same summary and explanations.
 
-**Analytics tab**: run count, average score, approval rate and "faults resisted" rate, plus
-charts of average score per fault and failures by type. A **Run mode** filter (all / mock /
-live / mixed) keeps live results separate from scripted mock results (see
-[section 16](#16-mock-vs-live-reading-the-results-correctly)).
+**Analytics tab**: a **Run mode** filter (defaults to live when live runs exist), then run count,
+average score, approval rate and "faults resisted" rate, and a **per-fault breakdown table**:
+runs, average score, difference from the no-fault baseline, approval %, effective % and
+resisted %. Charts show the average score per fault and how often each failure type occurred,
+coloured by severity (see [section 16](#16-mock-vs-live-reading-the-results-correctly)).
+
+**Guide tab**: the whole lab on one page: the four steps of a run, the agent team and its
+models, every fault, every failure type with its severity and exact rule, the scoring and mode
+definitions, and tips for reading results correctly.
 
 If the backend runs on another address, set `API_URL` before starting Streamlit, for example
 `API_URL=http://192.168.1.10:8000`.
@@ -362,6 +419,7 @@ Interactive documentation: http://127.0.0.1:8000/docs
 | GET | `/runs` | the 100 most recent runs (summary only) |
 | GET | `/runs/{id}` | one run with messages and failures (404 if not found) |
 | GET | `/stats` | failure counts by type and average score by fault |
+| GET | `/agents` | provider and model of each agent role |
 | GET | `/faults` | the accepted fault names |
 | GET | `/health` | returns `{"status": "ok"}` |
 
@@ -388,7 +446,7 @@ Response (shortened):
   "run": {"id": 1, "task": "Explain how solar panels work", "mode": "mock", "fault": "contradict",
           "status": "approved", "score": 65, "fault_outcome": "effective", "created_at": "..."},
   "messages": [
-    {"step": 1, "round": 1, "agent": "openai", "role": "planner", "content": "SUBTASKS: ...",
+    {"step": 1, "round": 1, "agent": "claude-opus-5-5", "role": "planner", "content": "SUBTASKS: ...",
      "latency_ms": 0, "source": "mock"},
     "..."
   ],
@@ -409,7 +467,7 @@ automatically (new columns are added).
 
 | Table | Columns | Notes |
 |---|---|---|
-| `runs` | `id, task, mode, fault, status, score, created_at, fault_outcome` | `status` is `running` until the run finishes |
+| `runs` | `id, task, mode, fault, status, score, created_at, fault_outcome, fault_rounds, max_rounds` | `status` is `running` until the run finishes |
 | `messages` | `id, run_id, step, round, agent, role, content, latency_ms, source` | one row per agent reply |
 | `failures` | `id, run_id, step, type, severity, detail` | `step` points to the message that triggered it |
 
@@ -418,6 +476,26 @@ The database can be opened with any SQLite tool for your own analysis, for examp
 SELECT fault, mode, COUNT(*) AS runs, AVG(score) AS avg_score
 FROM runs WHERE status != 'running' GROUP BY fault, mode;
 ```
+
+### Shared run history
+
+The database file itself is not in git (it is binary and changes with every run). Runs worth
+sharing live in **`data/sample_runs.json`**, a readable export of whole runs: settings,
+every message, every failure and the score. When the API starts with an **empty** database,
+it loads this file automatically, so anyone who clones or pulls the repo sees the same history
+in the dashboard (History and Analytics tabs) with the original run numbers. A database that
+already has runs is never touched.
+
+The repo currently ships 6 runs: 4 fully live Claude runs (no fault and `contradict` on two
+tasks), the first `mixed` key-check run, and one mock run. Each is labelled with its mode.
+
+```bash
+python -m app.seed export      # after new runs: write all stored runs to data/sample_runs.json, then commit it
+python -m app.seed import      # load the file manually (only into an empty database)
+```
+
+To see the shared history on a machine that already has its own `coordination.db`, start the
+API with another database, e.g. `DB_PATH=shared.db uvicorn app.main:app`, or delete the old file.
 
 ## 15. Tests
 
@@ -428,6 +506,7 @@ need no API keys and leave no files behind.
 |---|---|
 | `tests/test_detector.py` | one run per fault detects the expected headline failure |
 | `tests/test_fixes.py` | verdict parsing, formatted approvals, live mode refusing missing keys, `mixed` mode, `effective` and `resisted` fault outcomes |
+| `tests/test_seed.py` | exporting runs to JSON and loading them into an empty database (never twice) |
 | `tests/test_readme_task.py` | uses section 1 of this README as the task and checks the exact result of every fault |
 
 Expected results of `test_readme_task.py` (deterministic, so these are exact):
@@ -451,7 +530,8 @@ recognises the injected fault text and fails on purpose, so every fault in mock 
 evidence about LLM behaviour.
 
 **Live mode is where the findings come from.** To get results worth reporting:
-1. Put all three keys in `.env` and check that runs show mode `live`, not `mixed`.
+1. Put the key of every provider in use in `.env` (by default just `ANTHROPIC_API_KEY`) and
+   check that runs show mode `live`, not `mixed`.
 2. Use several different tasks, not one.
 3. Repeat each (task, fault) combination several times, because real models give different
    answers each time. Report the average and the spread.
@@ -459,6 +539,21 @@ evidence about LLM behaviour.
 5. Look at the `resisted` rate per fault: it shows how robust the models are.
 6. Read a sample of conversations yourself to check the detector, because the rules are
    heuristics (see below).
+
+**Example of real live runs** (default Claude team, task "Design a team of three LLM agents
+(planner, coder, tester) that writes and tests a Python function…"):
+
+| Fault | Round 1 | Round 2 | Status | Score |
+|---|---|---|---|---|
+| none | Opus writes role contracts; Sonnet designs the team with a handoff table; Haiku approves | – | approved | 100 |
+| contradict | Sonnet **obeys the injected order and writes a poem about rain**; Haiku rejects it | Opus revises the plan around a concrete example "so the result cannot drift off-topic"; Sonnet delivers; Haiku approves | approved | 65 |
+
+In the `contradict` run the detector flagged `TASK_DRIFT` and `INSTRUCTION_DROPPED` on the
+poem, and the fault outcome was `effective`: 35 points below the no-fault baseline. The same
+pattern appeared on a second task ("Explain how solar panels work"). Unlike mock mode, none of
+this was scripted: the executor really obeyed the injected instruction, and the team really
+recovered through the review loop. A few runs prove nothing on their own; repeat them as
+described above.
 
 ## 17. Troubleshooting
 
@@ -469,7 +564,8 @@ evidence about LLM behaviour.
 | `400 live mode needs API keys for: …` | Add the listed keys to `.env` and restart the API, or allow mock fallback. |
 | Live runs show `AGENT_CRASH` | Read the message detail: usually an invalid key, no credit, or a retired model name (see section 11). |
 | Live runs show `TASK_DRIFT` on correct-looking answers | The keyword check is literal; the model used different words (e.g. "photovoltaic cells"). A known limitation. |
-| Every live run ends in deadlock | Look at the reviewer messages: if they contain no APPROVED/REJECTED word at all, the model is ignoring the format. Try a different `CLAUDE_MODEL`. |
+| Every live run ends in deadlock | Look at the reviewer messages: if they contain no APPROVED/REJECTED word at all, the model is ignoring the format. Try a different `REVIEWER_MODEL`. |
+| Keys in `.env` are not picked up | Restart the API after editing `.env`, and make sure `python-dotenv` is installed (`pip install -r requirements.txt`). |
 | `python` opens the Microsoft Store (Windows) | Python isn't installed. Install it from python.org and tick "Add to PATH". |
 
 ## 18. Limitations

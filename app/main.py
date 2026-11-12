@@ -9,21 +9,24 @@ Endpoints:
   GET  /runs        the 100 most recent runs (summary rows)
   GET  /runs/{id}   one run with its messages and failures
   GET  /stats       aggregates for the charts
+  GET  /agents      provider and model of each agent role
   GET  /faults      the fault names accepted by POST /runs
   GET  /health      liveness check
 """
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from . import database as db
+from . import database as db, seed
 from .orchestrator import run_task, MissingKeysError
 from .fault_injection import FAULTS
+from .agents import AGENTS
 
 app = FastAPI(title="Multi-Agent Coordination Failure Lab", version="1.0")
 # Allow any origin so a browser-based frontend on another port can call the API.
 # Fine for a local research tool; restrict this before exposing the server publicly.
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 db.init_db()                                  # create/upgrade tables at startup
+seed.import_runs()                            # empty database? load the shared run history
 
 
 class RunRequest(BaseModel):
@@ -40,6 +43,12 @@ class RunRequest(BaseModel):
 def health():
     """Liveness check for scripts and monitors."""
     return {"status": "ok"}
+
+
+@app.get("/agents")
+def agents():
+    """Which provider and model each role uses, e.g. {"planner": {"provider": "claude", ...}}."""
+    return {role: {"provider": a["provider"], "model": a["model"]} for role, a in AGENTS.items()}
 
 
 @app.get("/faults")

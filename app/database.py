@@ -2,7 +2,7 @@
 
 Schema (one run has many messages and many failures, linked by run_id):
 
-    runs      id, task, mode, fault, status, score, created_at, fault_outcome
+    runs      id, task, mode, fault, status, score, created_at, fault_outcome, fault_rounds, max_rounds
               mode          'mock' | 'live' | 'mixed'  (see orchestrator._run_mode)
               status        'running' while in progress, then 'approved' | 'deadlock'
               fault_outcome 'n/a' | 'effective' | 'resisted' (see orchestrator.fault_outcome)
@@ -55,23 +55,25 @@ def init_db():
             severity INTEGER, detail TEXT);
         """)
         # columns added after the first release; ALTER keeps existing databases usable
-        for table, column in (("runs", "fault_outcome TEXT"), ("messages", "source TEXT")):
+        for table, column in (("runs", "fault_outcome TEXT"), ("messages", "source TEXT"),
+                              ("runs", "fault_rounds INTEGER"), ("runs", "max_rounds INTEGER")):
             try:
                 c.execute(f"ALTER TABLE {table} ADD COLUMN {column}")
             except sqlite3.OperationalError:
                 pass                                # column already exists
 
 
-def create_run(task, mode, fault):
+def create_run(task, mode, fault, fault_rounds=None, max_rounds=None):
     """Insert a new run in status 'running' and return its id.
 
     `mode` here is the *requested* mode; `finish_run` overwrites it with the mode that actually
-    happened (e.g. 'mixed' if some agents fell back to mocks).
+    happened (e.g. 'mixed' if some agents fell back to mocks). fault_rounds / max_rounds are
+    stored so the dashboard can show where the fault was active in past runs.
     """
     init_db()
     with _conn() as c:
-        cur = c.execute("INSERT INTO runs(task,mode,fault,created_at) VALUES(?,?,?,?)",
-                        (task, mode, fault, datetime.now(timezone.utc).isoformat()))
+        cur = c.execute("INSERT INTO runs(task,mode,fault,fault_rounds,max_rounds,created_at) VALUES(?,?,?,?,?,?)",
+                        (task, mode, fault, fault_rounds, max_rounds, datetime.now(timezone.utc).isoformat()))
         return cur.lastrowid
 
 

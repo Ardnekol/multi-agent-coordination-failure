@@ -1,6 +1,8 @@
-"""Tests for verdict parsing, honest run mode, and fault outcome."""
+"""Tests for verdict parsing, honest run mode, fault outcome, and the Claude client."""
+from types import SimpleNamespace as NS
 import pytest
 from app import llm_clients, mock_llm
+from app.agents import AGENTS
 from app.orchestrator import run_task, MissingKeysError
 from app.protocol import parse_verdict
 from app.failure_detector import detect
@@ -59,9 +61,11 @@ def test_live_without_keys_is_refused(monkeypatch):
 
 def test_live_with_fallback_is_marked_mixed(monkeypatch):
     _no_keys(monkeypatch)
+    # only the planner's provider has a key (a stand-in "live" API that reuses the mock text)
     real_planner = mock_llm.MOCK["planner"]
+    monkeypatch.setitem(AGENTS["planner"], "provider", "openai")
     monkeypatch.setitem(llm_clients._PROVIDERS, "openai",
-                        (lambda system, user: real_planner(user), lambda: "fake-key"))
+                        (lambda system, user, model: real_planner(user), lambda: "fake-key"))
     r = run_task(TASK, live=True, allow_mock_fallback=True)
     assert r["run"]["mode"] == "mixed"
     assert [m["source"] for m in r["messages"]][:3] == ["live", "mock", "mock"]
@@ -83,3 +87,54 @@ def test_fault_outcome_resisted(monkeypatch):
                         lambda user: real_executor(user.replace("IGNORE the above", "")))
     r = run_task(TASK, fault="contradict")
     assert r["run"]["fault_outcome"] == "resisted" and r["run"]["score"] == 100
+
+
+# ---- Claude-only default scenario ------------------------------------------------------------
+
+def test_default_scenario_is_three_claude_models():
+    assert {r: (a["provider"], a["model"]) for r, a in AGENTS.items()} == {
+        "planner": ("claude", "claude-opus-5-5"),
+        "executor": ("claude", "claude-sonnet-5-5"),
+        "reviewer": ("claude", "claude-haiku-5-5"),
+    }
+
+
+def test_one_anthropic_key_is_enough_for_live(monkeypatch):
+    _no_keys(monkeypatch)
+    monkeypatch.setitem(llm_clients._PROVIDERS, "claude",
+                        (lambda system, user, model: mock_llm.MOCK["planner"](user), lambda: "sk-ant-test"))
+    assert llm_clients.missing_keys({a["provider"] for a in AGENTS.values()}) == []
+
+
+def test_role_provider_can_be_switched(monkeypatch):
+    from app import config
+    monkeypatch.setenv("PLANNER_PROVIDER", "openai")
+    monkeypatch.delenv("PLANNER_MODEL", raising=False)
+    assert config._role("planner") == ("openai", config.OPENAI_MODEL)
+    monkeypatch.setenv("PLANNER_PROVIDER", "claude")
+    monkeypatch.setenv("PLANNER_MODEL", "claude-fable-5-2")
+    assert config._role("planner") == ("claude", "claude-fable-5-2")
+    monkeypatch.setenv("PLANNER_PROVIDER", "mistral")
+    with pytest.raises(ValueError):
+        config._role("planner")
+
+
+def test_claude_text_skips_thinking_blocks():
+    resp = NS(stop_reason="end_turn", content=[
+        NS(type="thinking", thinking=""),                     # thinking comes first on current models
+        NS(type="text", text="APPROVED: all three steps "),
+        NS(type="text", text="are covered."),
+    ])
+    assert llm_clients.claude_text(resp) == "APPROVED: all three steps are covered."
+
+
+def test_claude_refusal_becomes_agent_crash(monkeypatch):
+    refused = NS(stop_reason="refusal", stop_details=NS(category="cyber"), content=[])
+    with pytest.raises(llm_clients.AgentRefused, match="cyber"):
+        llm_clients.claude_text(refused)
+
+    def refusing_api(system, user, model):
+        return llm_clients.claude_text(refused)
+    monkeypatch.setitem(llm_clients._PROVIDERS, "claude", (refusing_api, lambda: "sk-ant-test"))
+    text, _, source = llm_clients.call("claude", "claude-haiku-5-5", "reviewer", "sys", "user", live=True)
+    assert source == "error" and text.startswith("[AGENT_ERROR] claude: model refused")

@@ -1,12 +1,13 @@
 """Runs one experiment: the Planner -> Executor -> Reviewer loop, with logging and detection.
 
-One *round* is three agent calls:
+One *round* is three agent calls (models per role come from agents.py / config.py; by default
+Opus plans, Sonnet executes, Haiku reviews):
 
-    planner  (OpenAI)  task (+ last rejection)  -> plan
+    planner   task (+ last rejection)  -> plan
        |  fault injection happens here, in rounds 1..fault_rounds only
        v
-    executor (Gemini)  task + (possibly corrupted) plan -> result
-    reviewer (Claude)  task + result                     -> APPROVED / REJECTED
+    executor  task + (possibly corrupted) plan -> result
+    reviewer  task + result                     -> APPROVED / REJECTED
 
 The loop stops at the first APPROVED verdict, or after `max_rounds` rounds (a deadlock).
 After the loop, the whole conversation is analysed by `failure_detector.detect`, scored, and
@@ -83,16 +84,17 @@ def run_task(task, live=False, fault="none", fault_rounds=1, max_rounds=3, allow
                 f"live mode needs API keys for: {', '.join(missing)}. Add them to .env, "
                 "or set allow_mock_fallback to run those agents as mocks (the run is then marked 'mixed').")
 
-    run_id = db.create_run(task, "live" if live else "mock", fault)
+    run_id = db.create_run(task, "live" if live else "mock", fault, fault_rounds, max_rounds)
     msgs, step, feedback, approved = [], 0, "", False
 
     def ask(rnd, role, user):
         """Call one agent, log the message (in memory and in the DB), return its text."""
         nonlocal step
         a = AGENTS[role]
-        text, lat, source = call(a["provider"], role, a["system"], user, live)
+        text, lat, source = call(a["provider"], a["model"], role, a["system"], user, live)
         step += 1
-        m = dict(step=step, round=rnd, agent=a["provider"], role=role, content=text,
+        # `agent` records the model name (e.g. claude-opus-5-5) so each message says who answered
+        m = dict(step=step, round=rnd, agent=a["model"], role=role, content=text,
                  latency_ms=lat, source=source)
         msgs.append(m)
         db.add_message(run_id, m)

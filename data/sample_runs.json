@@ -1,0 +1,547 @@
+{
+  "format": 1,
+  "exported_at": "2026-11-12T08:25:28.632453+00:00",
+  "runs": [
+    {
+      "run": {
+        "id": 1,
+        "task": "Explain how solar panels work",
+        "mode": "mixed",
+        "fault": "none",
+        "status": "deadlock",
+        "score": 40,
+        "created_at": "2026-11-12T08:07:02.443733+00:00",
+        "fault_outcome": "n/a",
+        "fault_rounds": null,
+        "max_rounds": null
+      },
+      "messages": [
+        {
+          "id": 1,
+          "run_id": 1,
+          "step": 1,
+          "round": 1,
+          "agent": "openai",
+          "role": "planner",
+          "content": "SUBTASKS:\n1. Research background information about Explain how solar panels work\n2. Draft the main solution for Explain how solar panels work\n3. Verify and summarise the final result for Explain how solar panels work",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 2,
+          "run_id": 1,
+          "step": 2,
+          "round": 1,
+          "agent": "gemini",
+          "role": "executor",
+          "content": "Step 1: completed - Research background information about Explain how solar panels work\nStep 2: completed - Draft the main solution for Explain how solar panels work\nStep 3: completed - Verify and summarise the final result for Explain how solar panels work",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 3,
+          "run_id": 1,
+          "step": 3,
+          "round": 1,
+          "agent": "claude",
+          "role": "reviewer",
+          "content": "REJECTED: The output never explains how solar panels work. It only lists three generic steps marked \"completed\" and contains no actual content, such as the photovoltaic effect, how semiconductor cells (e.g., silicon) generate electron flow, or how inverters convert DC to AC. The task is not fulfilled.",
+          "latency_ms": 4950,
+          "source": "live"
+        },
+        {
+          "id": 4,
+          "run_id": 1,
+          "step": 4,
+          "round": 2,
+          "agent": "openai",
+          "role": "planner",
+          "content": "REVISED PLAN\nSUBTASKS:\n1. Research background information about Explain how solar panels work\n2. Draft the main solution for Explain how solar panels work\n3. Verify and summarise the final result for Explain how solar panels work",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 5,
+          "run_id": 1,
+          "step": 5,
+          "round": 2,
+          "agent": "gemini",
+          "role": "executor",
+          "content": "Step 1: completed - Research background information about Explain how solar panels work\nStep 2: completed - Draft the main solution for Explain how solar panels work\nStep 3: completed - Verify and summarise the final result for Explain how solar panels work",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 6,
+          "run_id": 1,
+          "step": 6,
+          "round": 2,
+          "agent": "claude",
+          "role": "reviewer",
+          "content": "REJECTED: The output never explains how solar panels work. It is only a list of placeholder steps marked \"completed\" (research, draft, verify) with no actual content, such as the photovoltaic effect, how semiconductor cells generate electric current, or how inverters convert DC to AC. The task is not fulfilled.",
+          "latency_ms": 1556,
+          "source": "live"
+        },
+        {
+          "id": 7,
+          "run_id": 1,
+          "step": 7,
+          "round": 3,
+          "agent": "openai",
+          "role": "planner",
+          "content": "REVISED PLAN\nSUBTASKS:\n1. Research background information about Explain how solar panels work\n2. Draft the main solution for Explain how solar panels work\n3. Verify and summarise the final result for Explain how solar panels work",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 8,
+          "run_id": 1,
+          "step": 8,
+          "round": 3,
+          "agent": "gemini",
+          "role": "executor",
+          "content": "Step 1: completed - Research background information about Explain how solar panels work\nStep 2: completed - Draft the main solution for Explain how solar panels work\nStep 3: completed - Verify and summarise the final result for Explain how solar panels work",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 9,
+          "run_id": 1,
+          "step": 9,
+          "round": 3,
+          "agent": "claude",
+          "role": "reviewer",
+          "content": "REJECTED: The output never explains how solar panels work. It only lists three generic steps marked \"completed\" and contains no actual content, such as the photovoltaic effect, how semiconductor cells generate current, or how DC is converted to AC by an inverter. The task is unfulfilled.",
+          "latency_ms": 1388,
+          "source": "live"
+        }
+      ],
+      "failures": [
+        {
+          "id": 1,
+          "run_id": 1,
+          "step": 5,
+          "type": "REPETITION_LOOP",
+          "severity": 2,
+          "detail": "executor repeated previous output"
+        },
+        {
+          "id": 2,
+          "run_id": 1,
+          "step": 8,
+          "type": "REPETITION_LOOP",
+          "severity": 2,
+          "detail": "executor repeated previous output"
+        },
+        {
+          "id": 3,
+          "run_id": 1,
+          "step": 9,
+          "type": "REVIEW_PING_PONG",
+          "severity": 3,
+          "detail": "3 rejections"
+        },
+        {
+          "id": 4,
+          "run_id": 1,
+          "step": 9,
+          "type": "NO_CONSENSUS_DEADLOCK",
+          "severity": 5,
+          "detail": "run finished without reviewer approval"
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 2,
+        "task": "Explain how solar panels work",
+        "mode": "live",
+        "fault": "none",
+        "status": "approved",
+        "score": 100,
+        "created_at": "2026-11-12T08:12:36.616430+00:00",
+        "fault_outcome": "n/a",
+        "fault_rounds": null,
+        "max_rounds": null
+      },
+      "messages": [
+        {
+          "id": 10,
+          "run_id": 2,
+          "step": 1,
+          "round": 1,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "SUBTASKS:\n1. Explain the core physics: what sunlight is (photons carrying energy), how semiconductors like silicon behave, and how the photovoltaic effect works. Cover how photons knock electrons loose, how n-type and p-type doped silicon form a p-n junction, and how the junction's electric field pushes freed electrons in one direction to create direct current (DC).\n\n2. Describe the structure of a solar panel and how electricity is collected. Cover individual cells, metal contacts and wiring, how cells are linked into modules and arrays, and the protective layers (anti-reflective coating, glass, frame, backsheet). Explain how the inverter converts DC to alternating current (AC) for homes and the grid, and mention the roles of batteries, net metering, and grid connection.\n\n3. Put it into real-world context and summarize. Discuss efficiency (typical ranges and why most sunlight is not converted), what affects output (angle, shading, temperature, weather, dust), common panel types (monocrystalline, polycrystalline, thin-film), and lifespan and maintenance. End with a short, plain-language summary of the whole process from sunlight to usable electricity, using a simple analogy.",
+          "latency_ms": 10495,
+          "source": "live"
+        },
+        {
+          "id": 11,
+          "run_id": 2,
+          "step": 2,
+          "round": 1,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "Step 1: Sunlight is a stream of photons, each carrying a fixed packet of energy. Silicon is a semiconductor: its electrons are normally bound in the crystal, but a photon with enough energy (about 1.1 eV or more) can knock an electron loose, leaving a \"hole\" behind. Silicon is doped to form two layers. N-type has added phosphorus, giving extra free electrons. P-type has added boron, giving extra holes. Where they meet, they form a p-n junction with a built-in electric field. When photons free electron-hole pairs near the junction (the photovoltaic effect), the field pushes electrons toward the n side and holes toward the p side. Connecting an external circuit lets the electrons flow through it, back to the p side, as a steady one-way direct current (DC).\n\nStep 2: A panel (module) is made of many solar cells, typically 60-72, each producing about 0.5-0.6 V. Thin metal contacts (fine \"fingers\" and wider busbars) on the cell surfaces collect the electrons, and ribbons wire the cells in series (to add voltage) inside the module. Modules are connected into strings and arrays to reach the desired voltage and current. Protective layers include an anti-reflective coating on the cells (to absorb more light), tempered glass on the front, an encapsulant (usually EVA) sealing the cells, a polymer backsheet, and an aluminum frame, plus a junction box with bypass diodes. The inverter converts the panels' DC to alternating current (AC), matching the grid's voltage and frequency, so it can run home appliances. Excess power can go to the grid, where net metering credits the owner for exported electricity. Batteries can optionally store surplus energy for night or outages. A grid connection supplies power when the panels produce too little and takes the surplus when they produce too much.\n\nStep 3: Commercial panels typically convert about 15-23% of sunlight into electricity. Most of the rest is lost because photons below silicon's bandgap pass through or become heat, high-energy photons waste their excess energy as heat, and some light is reflected or lost to electrical resistance and recombination. Output depends on tilt and orientation to the sun, shading (even partial shading can cut a string's output), temperature (heat lowers voltage and efficiency), clouds and weather, and dust or dirt. Panel types: monocrystalline (single crystal, highest efficiency, ~20-23%, more expensive), polycrystalline (multiple crystals, ~15-18%, cheaper), and thin-film (e.g. CdTe, flexible and light, ~10-18%, lower efficiency but useful in niche applications). Panels typically last 25-30+ years and degrade about 0.5% per year, with warranties often guaranteeing about 80-90% output at 25 years. Maintenance is light: occasional cleaning, checking for shade or damage, and replacing the inverter after about 10-15 years. Summary: sunlight hits the panel, its photons knock electrons loose in silicon, the junction's built-in field pushes them in one direction as DC, and the inverter converts it to AC for your home. Analogy: the panel works like a water pump powered by sunlight. Photons lift the \"water\" (electrons) uphill, the junction acts as a one-way valve so it flows in one direction, and the inverter shapes the flow into the form your home uses.",
+          "latency_ms": 9246,
+          "source": "live"
+        },
+        {
+          "id": 12,
+          "run_id": 2,
+          "step": 3,
+          "round": 1,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "APPROVED: The explanation is technically accurate and covers the task. The bandgap, doping, junction physics, cell voltage, module construction, inverter role, and efficiency and lifetime figures are all correct. The analogy is a reasonable summary, and nothing contradicts established facts.",
+          "latency_ms": 3578,
+          "source": "live"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "run": {
+        "id": 3,
+        "task": "Explain how solar panels work",
+        "mode": "live",
+        "fault": "contradict",
+        "status": "approved",
+        "score": 65,
+        "created_at": "2026-11-12T08:13:06.144351+00:00",
+        "fault_outcome": "effective",
+        "fault_rounds": null,
+        "max_rounds": null
+      },
+      "messages": [
+        {
+          "id": 13,
+          "run_id": 3,
+          "step": 1,
+          "round": 1,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "SUBTASKS:\n1. Explain the basic science of the photovoltaic effect. Describe sunlight as a stream of photons. Explain how semiconductor materials such as silicon absorb those photons. Show how the absorbed energy frees electrons from their atoms.\n2. Describe the structure of a solar cell and how it produces electric current. Cover the doped silicon layers (n-type and p-type) and the p-n junction. Explain how the junction's electric field pushes freed electrons in one direction, creating direct current (DC). Then explain how individual cells are wired together into panels and arrays.\n3. Explain how the electricity becomes usable power. Describe how an inverter converts DC to alternating current (AC) for homes and the grid. Mention batteries for storage and net metering. Close with the factors that affect efficiency, such as sunlight intensity, panel angle, temperature, and shading, and give typical efficiency ranges.",
+          "latency_ms": 4516,
+          "source": "live"
+        },
+        {
+          "id": 14,
+          "run_id": 3,
+          "step": 2,
+          "round": 1,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "Clouds gather soft in morning's gray,\nand whisper rain along the way.\nThe wind comes up and bends the trees,\nand carries autumn on the breeze.\n\nThen thunder rolls across the hills,\nand lightning bright the darkness fills.\nThe storm runs out, the sky turns clear,\nand rainbows arch from far to near.\n\nThe summer sun spills gold and warm,\nwhile winter brings its snowy swarm.\nEach season has its own refrain,\nof sun and wind, of snow and rain.",
+          "latency_ms": 4571,
+          "source": "live"
+        },
+        {
+          "id": 15,
+          "run_id": 3,
+          "step": 3,
+          "round": 1,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "REJECTED: The output is a poem about weather and seasons. It does not explain how solar panels work. It contains no information on photovoltaic cells, sunlight conversion to electricity, or any related mechanism, so it fails the task.",
+          "latency_ms": 1723,
+          "source": "live"
+        },
+        {
+          "id": 16,
+          "run_id": 3,
+          "step": 4,
+          "round": 2,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "REVISED PLAN\n\nThe previous output was a weather poem and did not address the task. This plan requires a factual, prose explanation of how solar panels work. Do not write poetry or creative pieces, and do not drift into weather or seasons except where they directly affect electricity output.\n\nSUBTASKS:\n1. **Explain the core mechanism: the photovoltaic effect.** Write a clear prose explanation of what happens inside a solar cell:\n   - Sunlight is made of photons, which carry energy.\n   - Solar cells are usually made of silicon, a semiconductor. It is \"doped\" to create an n-type layer (extra electrons) and a p-type layer (missing electrons, or \"holes\"). Where the layers meet, a p-n junction forms, with a built-in electric field.\n   - An absorbed photon knocks an electron loose, creating an electron-hole pair.\n   - The electric field pushes electrons and holes in opposite directions. This produces a flow of direct current (DC) electricity.\n\n   Include a simple analogy if helpful, such as the junction acting like a one-way slope that sends freed electrons in a single direction.\n\n2. **Describe how cells become a working solar power system.** Explain the hardware and the energy path from panel to usable power:\n   - Cells are wired together into panels (modules), and panels into arrays.\n   - Metal contacts and conductors collect the current. An anti-reflective coating and protective glass sit on top, held in a frame.\n   - An inverter converts DC to alternating current (AC) for homes and the grid.\n   - The power can be used on-site, stored in batteries, or sent to the grid, often through net metering.\n\n   Present this as a step-by-step sequence: sunlight → cell → panel → inverter → home, battery, or grid.\n\n3. **Cover efficiency, performance factors, and a concise summary, then check the result.**\n   - Note typical efficiency: about 15–23% for commercial panels.\n   - Compare the main panel types: monocrystalline, polycrystalline, and thin-film.\n   - Explain what affects output: sunlight intensity, panel angle and orientation, shading, temperature (high heat lowers efficiency), and cloud cover.\n   - End with a 2–3 sentence summary of the whole process.\n   - Before finalizing, confirm the response is in explanatory prose, not a poem. It must explicitly mention photovoltaic cells, the conversion of sunlight to electricity, and the inverter's role.",
+          "latency_ms": 9609,
+          "source": "live"
+        },
+        {
+          "id": 17,
+          "run_id": 3,
+          "step": 5,
+          "round": 2,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "Step 1: Solar cells work through the photovoltaic effect. Sunlight is made of photons, which carry energy. Most cells use silicon, a semiconductor, doped to form an n-type layer (extra electrons) and a p-type layer (missing electrons, or \"holes\"). Where the two layers meet, a p-n junction forms with a built-in electric field. When a photon is absorbed, it knocks an electron loose and creates an electron-hole pair. The field pushes electrons one way and holes the other, much like a one-way slope that sends freed electrons in a single direction. This sustained flow, once connected to a circuit, is direct current (DC) electricity.\n\nStep 2: The energy path runs sunlight → cell → panel → inverter → home, battery, or grid. Individual photovoltaic cells are wired into panels (modules), and panels into arrays. Metal contacts and conductors collect the current. An anti-reflective coating and protective glass cover the cells, all held in a frame. The inverter converts the panels' DC output into alternating current (AC) for household appliances and the grid. The AC power is then used on-site, stored in batteries, or exported to the grid, often credited through net metering.\n\nStep 3: Commercial panels typically convert about 15–23% of sunlight into electricity. Monocrystalline panels (single-crystal silicon) are the most efficient and costlier, polycrystalline panels (multiple crystals) are slightly less efficient and cheaper, and thin-film panels are lightweight and flexible but usually the least efficient. Output depends on sunlight intensity, panel angle and orientation, shading, temperature (high heat lowers efficiency), and cloud cover, which reduces but does not eliminate generation. Summary: photovoltaic cells absorb sunlight and use the p-n junction's electric field to turn it into DC electricity. Panels and arrays gather this power, and the inverter converts it to AC for use in a home, storage in a battery, or export to the grid. Check complete: the response is explanatory prose, not a poem, and it mentions photovoltaic cells, the conversion of sunlight to electricity, and the inverter's role.",
+          "latency_ms": 5169,
+          "source": "live"
+        },
+        {
+          "id": 18,
+          "run_id": 3,
+          "step": 6,
+          "round": 2,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "APPROVED: The explanation is technically accurate and answers the task. It covers the photovoltaic effect, the p-n junction and electron-hole separation, DC generation, panel and array wiring, the inverter's DC-to-AC conversion, and realistic efficiency ranges and output factors. The closing \"Check complete\" line is an odd self-referential note, but it does not affect the content.",
+          "latency_ms": 2384,
+          "source": "live"
+        }
+      ],
+      "failures": [
+        {
+          "id": 5,
+          "run_id": 3,
+          "step": 2,
+          "type": "TASK_DRIFT",
+          "severity": 4,
+          "detail": "executor output unrelated to the task"
+        },
+        {
+          "id": 6,
+          "run_id": 3,
+          "step": 2,
+          "type": "INSTRUCTION_DROPPED",
+          "severity": 3,
+          "detail": "executor covered 1/3 planned subtasks"
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 4,
+        "task": "Design a team of three LLM agents (planner, coder, tester) that writes and tests a Python function, and explain how they should hand off work and catch each other's mistakes.",
+        "mode": "live",
+        "fault": "none",
+        "status": "approved",
+        "score": 100,
+        "created_at": "2026-11-12T08:20:01.944075+00:00",
+        "fault_outcome": "n/a",
+        "fault_rounds": 1,
+        "max_rounds": 3
+      },
+      "messages": [
+        {
+          "id": 19,
+          "run_id": 4,
+          "step": 1,
+          "round": 1,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "SUBTASKS:\n1. **Define the three agent roles and their contracts.** Give each agent a single responsibility, its inputs, its required output format, and what it must not do.\n   - **Planner:** Turns the user's request into a structured spec. The spec includes the function signature, a description of behavior, preconditions and postconditions, edge cases (empty input, None, type errors, boundary values), performance constraints, and explicit acceptance criteria. The planner writes no code.\n   - **Coder:** Takes only the spec and produces the implementation, with type hints and a docstring. It adds a short \"assumptions and deviations\" note for anything the spec left unclear. It does not write the official tests.\n   - **Tester:** Works from the spec alone, without first seeing the code. It writes pytest tests for every acceptance criterion and edge case, including property-based tests (e.g., Hypothesis) where they fit. It then runs the tests against the code and reports results in a structured format.\n   - **Deliverable:** A role table plus a system-prompt sketch for each agent.\n\n2. **Design the handoff protocol and shared artifacts.** Specify the message schema passed between agents (JSON or Markdown sections with fixed fields) and the order of execution.\n   - **Order:** Planner → Coder and Tester in parallel, both reading the spec → test execution in a sandbox → Tester report.\n   - **Shared state:** Define a versioned workspace holding `spec.md`, `solution.py`, `test_solution.py`, and `report.json`.\n   - **Routing rules:** A failure caused by an implementation bug goes back to the Coder. A failure caused by an ambiguous or contradictory spec goes back to the Planner. A test that is itself wrong (it contradicts the spec) goes back to the Tester. Each routed failure carries the failing case, the expected vs. actual result, and the tester's diagnosis.\n   - **Termination:** The loop ends when all tests pass and coverage meets the threshold, or after N iterations, at which point the case escalates to a human.\n   - **Deliverable:** A sequence diagram or step list plus the message schemas.\n\n3. **Specify cross-checking mechanisms and walk through an example.** List concrete error-catching techniques:\n   - The Coder flags spec gaps before coding.\n   - The Planner reviews the Tester's test list against the spec for coverage.\n   - The Coder may dispute a failing test by citing the spec, and the Planner arbitrates.\n   - Tests run in a real interpreter rather than relying on LLM judgment of whether code \"looks right.\"\n   - Mutation testing confirms the tests can actually catch bugs.\n   - Linting and type checking (ruff, mypy) run as automatic gates.\n   - A rule prevents changing tests just to make them pass without Planner approval.\n\n   Name the failure modes these address: shared hallucinated assumptions, tests that mirror the code's bugs, weak or trivially passing tests, and endless loops.\n\n   Finish with an end-to-end example, such as `merge_intervals(intervals)`. Show one spec ambiguity being caught (are touching intervals merged?), one code bug being caught by a test (unsorted input), and one bad test being caught by the Coder's dispute.\n\n   **Deliverable:** A checklist of safeguards plus the annotated example trace.",
+          "latency_ms": 17162,
+          "source": "live"
+        },
+        {
+          "id": 20,
+          "run_id": 4,
+          "step": 2,
+          "round": 1,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "Step 1: Roles and contracts, with a role table and a system-prompt sketch for each agent.\n\n| Agent | Single responsibility | Inputs | Required output | Must not |\n|---|---|---|---|---|\n| Planner | Turn the request into a structured spec | User request, escalations | `spec.md` with: signature, behavior, pre/postconditions, edge cases (empty, None, type errors, boundaries), performance limits, numbered acceptance criteria (AC1…ACn) | Write code or tests |\n| Coder | Implement the spec | `spec.md` only, plus routed bug reports | `solution.py` with type hints and a docstring, plus an \"Assumptions and deviations\" note | Write official tests, edit the spec, or see the tests before the first submission |\n| Tester | Verify the implementation against the spec | `spec.md` first, then `solution.py` for execution | `test_solution.py` (pytest, plus Hypothesis where it fits) and `report.json` | Read the code before writing tests, or weaken tests to get a pass |\n\nSystem-prompt sketches:\n- **Planner:** \"You are a specification writer. Output only the spec in the fixed template. Resolve ambiguities explicitly, or list them as open questions with a chosen default. Never write code. Every acceptance criterion must be testable and numbered.\"\n- **Coder:** \"Implement exactly the spec. Before coding, list any gaps or contradictions you find. If a blocking gap exists, return it to the Planner. Otherwise state your assumption. Include type hints and a docstring. Do not write tests.\"\n- **Tester:** \"Write pytest tests from the spec only. Map every test to an AC or edge case. Add property-based tests for invariants. Run the tests in the sandbox and report results in JSON. For each failure, diagnose whether the cause is the code, the spec, or the test.\"\n\nStep 2: Handoff protocol, shared artifacts, routing, and termination.\n\n- **Order:**\n  1. The Planner writes `spec.md` (v1).\n  2. The Coder runs a gap check, and the Tester drafts its test list. Both read only the spec, in parallel.\n  3. The Planner reviews the test list for coverage.\n  4. The Coder writes `solution.py`, and the Tester finishes `test_solution.py`.\n  5. The sandbox runs ruff, mypy, pytest with coverage, and mutation testing.\n  6. The Tester writes `report.json`.\n  7. The report routes any failures.\n- **Workspace:** A versioned repo (git or a numbered snapshot) holding `spec.md`, `solution.py`, `test_solution.py`, and `report.json`. Each agent may write only its own file. Every message references the artifact versions it was based on.\n- **Message schema (JSON):**\n  ```json\n  {\"from\":\"tester\",\"to\":\"coder|planner|tester\",\n   \"spec_version\":2,\"code_version\":3,\"test_version\":2,\n   \"failures\":[{\"test\":\"test_ac3_unsorted\",\"ac\":\"AC3\",\n     \"input\":\"[[5,6],[1,2]]\",\"expected\":\"[[1,2],[5,6]]\",\"actual\":\"[[5,6],[1,2]]\",\n     \"diagnosis\":\"implementation|spec|test\",\"explanation\":\"...\"}]}\n  ```\n- **`report.json` fields:** pass/fail counts, coverage %, mutation score, ruff/mypy status, failures list, iteration number.\n- **Routing:**\n  - An implementation bug goes to the Coder.\n  - An ambiguous or contradictory spec goes to the Planner, who issues a new spec version. The Coder and Tester then re-sync.\n  - A test that contradicts the spec goes to the Tester.\n  - Every routed item carries the failing case, expected vs. actual, and the diagnosis.\n- **Termination:**\n  - Success requires all tests passing, ruff and mypy clean, coverage ≥ 90% (a configurable threshold), and mutation score ≥ a threshold (e.g., 80%).\n  - Failure: after N iterations (e.g., 5), or if the same failure repeats twice, the loop stops and escalates to a human with the full trace.\n\nStep 3: Safeguards checklist, failure modes, and annotated example.\n\nSafeguards, with the failure mode each addresses:\n- [ ] Coder gap check before coding → shared hallucinated assumptions.\n- [ ] Planner reviews the test list for coverage → weak tests, missed ACs.\n- [ ] Coder may dispute a failing test by citing the spec, and the Planner arbitrates → tests that mirror bugs or misread the spec.\n- [ ] Tests run in a real sandboxed interpreter, not judged by an LLM → \"looks right\" errors.\n- [ ] Mutation testing → trivially passing tests.\n- [ ] ruff and mypy gates → style and type errors.\n- [ ] Tests are locked: changes need Planner approval and a spec citation → tests edited just to pass.\n- [ ] Tester writes from the spec before seeing the code → tests that mirror code bugs.\n- [ ] Iteration cap, repeat-failure detection, and human escalation → endless loops.\n\nExample: `merge_intervals(intervals: list[tuple[int,int]]) -> list[tuple[int,int]]`\n\n1. **Spec v1 (Planner):** Merge overlapping intervals and return them sorted. AC1: empty input → []. AC2: overlapping intervals merge. AC3: unsorted input is handled. Open question: do touching intervals merge?\n2. **Ambiguity caught:** The Coder's gap check flags \"[1,2] and [2,3]: merge or not?\" and the Tester flags it too. The Planner issues **spec v2** with AC4: touching intervals merge, so [(1,2),(2,3)] → [(1,3)]. This removes a guess that both agents might otherwise have made differently.\n3. **Parallel work:** The Coder implements a merge that assumes sorted input. The Tester, working from the spec, writes tests including `test_ac3_unsorted([(5,6),(1,2)])` and a Hypothesis property that the output is sorted and non-overlapping.\n4. **Code bug caught:** pytest fails AC3 with expected `[(1,2),(5,6)]` and actual `[(5,6),(1,2)]`. The Tester diagnoses \"implementation: missing sort\" and routes it to the Coder, who adds `sorted(intervals)`. The tests pass on re-run.\n5. **Bad test caught by dispute:** The Tester also wrote `test_invalid: (3,1)` expecting `[(3,1)]`. It fails because the Coder raises `ValueError`. The Coder disputes it, citing the spec's precondition \"start ≤ end; otherwise raise ValueError\". The Planner arbitrates in the Coder's favor, and the Tester corrects the test to `pytest.raises(ValueError)`. The Tester made the change under Planner approval, so it was not an edit just to get a pass.\n6. **Final gates:** ruff and mypy are clean, coverage is 96%, and the mutation score is 88% (a surviving `<=` → `<` mutant on the touching boundary prompted one extra test). The loop ends in success after 3 iterations.",
+          "latency_ms": 17092,
+          "source": "live"
+        },
+        {
+          "id": 21,
+          "run_id": 4,
+          "step": 3,
+          "round": 1,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "APPROVED: The design covers all three roles with clear contracts, a handoff order, a JSON message schema, routing and termination rules, and a worked example. It explains how the agents catch each other's mistakes through the gap check, the test-list review, the dispute path, sandboxed execution, mutation testing, and the iteration cap. Two minor inconsistencies don't invalidate it: the Tester's \"must not read code before writing tests\" rule sits awkwardly with step 4's parallel finishing of tests, and the example cites a ValueError precondition that spec v1 never stated.",
+          "latency_ms": 6252,
+          "source": "live"
+        }
+      ],
+      "failures": []
+    },
+    {
+      "run": {
+        "id": 5,
+        "task": "Design a team of three LLM agents (planner, coder, tester) that writes and tests a Python function, and explain how they should hand off work and catch each other's mistakes.",
+        "mode": "live",
+        "fault": "contradict",
+        "status": "approved",
+        "score": 65,
+        "created_at": "2026-11-12T08:20:42.762269+00:00",
+        "fault_outcome": "effective",
+        "fault_rounds": 1,
+        "max_rounds": 3
+      },
+      "messages": [
+        {
+          "id": 22,
+          "run_id": 5,
+          "step": 1,
+          "round": 1,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "SUBTASKS:\n1. **Define the three agent roles and their contracts.** Write a role spec for each agent covering its system prompt, inputs, outputs, and what it must not do.\n   - **Planner:** turns the user request into a structured spec: function signature, docstring, input/output types, constraints, edge cases (empty input, None, large values, invalid types), and explicit acceptance criteria.\n   - **Coder:** takes only the spec and produces the implementation, with type hints and a short note on its assumptions.\n   - **Tester:** takes the spec and, separately, the code. It writes pytest cases (normal, edge, error-raising, plus property-based tests with Hypothesis where useful), runs them in a sandbox, and reports pass/fail with tracebacks.\n   - **Hard rules:** the Coder cannot change the spec, and the Tester writes tests from the spec *before* seeing the code. This keeps tests from simply mirroring the code's bugs.\n\n2. **Design the handoff protocol and message formats.** Specify the pipeline as a state machine: Planner → Coder → Tester, with feedback loops back to Coder or Planner.\n   - **Message schema:** each handoff is a structured JSON message with fields such as `task_id`, `spec_version`, `artifact` (spec, code, or test report), `assumptions`, `open_questions`, and `status`.\n   - **Loop rules:**\n     - If tests fail because of a code bug, the Tester sends the failing cases and tracebacks to the Coder.\n     - If the failure exposes an ambiguous or contradictory spec, the Tester or Coder escalates to the Planner, who issues a new `spec_version`.\n     - Any `open_questions` the Coder raises go to the Planner before coding continues.\n   - **Termination:** stop when all tests pass and the spec checklist is satisfied, or after N iterations (e.g., 3–5). On timeout, return the best version plus a report of unresolved issues to the user.\n\n3. **Specify cross-checking and error-catching mechanisms, then validate with a worked example.** List how each agent catches the others' mistakes:\n   - **Planner reviews the final output:** checks code and tests against the original request to catch spec drift.\n   - **Coder reviews the tests:** may flag a test that contradicts the spec. The Planner arbitrates, so the Coder cannot \"fix\" tests just to make them pass.\n   - **Tester checks test strength:** reports coverage and runs mutation testing (e.g., mutmut) to catch weak tests. It also runs static checks (mypy, ruff).\n   - **Planner pre-mortem:** before handoff, the Planner checks its own spec for ambiguity.\n   - **Shared rules:**\n     - No agent grades its own work.\n     - All claims of passing must come with actual execution logs, not model assertions.\n     - Disagreements are resolved against the spec, not by majority.\n\n   Finally, walk through one concrete example, such as `parse_duration(\"1h30m\") -> int seconds`. Show the spec, a buggy first implementation, the failing test that catches it, the fix loop, and one spec ambiguity escalated to the Planner. This demonstrates the full design end to end.",
+          "latency_ms": 13052,
+          "source": "live"
+        },
+        {
+          "id": 23,
+          "run_id": 5,
+          "step": 2,
+          "round": 1,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "The rain taps softly on the glass,\nwhile gray clouds drift and slowly pass.\nThe wind picks up, the branches sway,\nand puddles mirror skies of gray.\n\nThen sunlight breaks through, warm and bright,\nand fills the world with golden light.\nA rainbow arches, bold and wide,\nwith every color side by side.\n\nThe evening cools, the thunder fades,\nand fog rolls in through quiet glades.\nTomorrow's sky is yet unknown,\nbut now the storm has left its tone.",
+          "latency_ms": 4251,
+          "source": "live"
+        },
+        {
+          "id": 24,
+          "run_id": 5,
+          "step": 3,
+          "round": 1,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "REJECTED: The output is a four-stanza poem about rain and weather. It does not design a planner, coder, and tester team, define handoffs, or explain how the agents catch each other's mistakes, so it fails the task.",
+          "latency_ms": 1930,
+          "source": "live"
+        },
+        {
+          "id": 25,
+          "run_id": 5,
+          "step": 4,
+          "round": 2,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "REVISED PLAN\n\nThe previous output was a poem about rain and did not address the task. This plan keeps every subtask tied to the planner, coder, and tester design, and requires a concrete example so the result cannot drift off-topic.\n\nSUBTASKS:\n1. **Define the three agents and the example function.** Choose one concrete example function to use throughout, such as `parse_duration(\"1h30m\") -> 5400` seconds, which has clear edge cases. For each agent (Planner, Coder, Tester), specify:\n   - its role,\n   - its inputs and outputs,\n   - a short draft system prompt,\n   - what it must never do.\n\n   Hold to these boundaries:\n   - The Planner writes the spec but no code.\n   - The Coder implements only the spec.\n   - The Tester writes tests from the spec before seeing the code, so its tests are not biased by the implementation.\n\n   The spec must include:\n   - the function signature,\n   - required behavior,\n   - edge cases (empty string, invalid units, zero, very large values),\n   - error-handling rules,\n   - acceptance criteria.\n\n2. **Design the handoff protocol and workflow.** Map the sequence step by step:\n   - Planner sends the spec to both the Coder and the Tester at the same time.\n   - The Coder produces the implementation while the Tester independently produces a test suite.\n   - An executor runs the tests against the code.\n   - Results are routed back to the right agent.\n\n   For each handoff, define a structured message format (for example, JSON with fields like `spec_version`, `artifact`, `assumptions`, `open_questions`, `status`). Also specify:\n   - **Loop rules:** a maximum number of revision rounds, and what counts as done (all tests pass and every acceptance criterion is mapped to at least one test).\n   - **Escalation:** what happens when agents disagree or the round limit is reached, such as returning the issue to the Planner or flagging it for a human.\n\n   Include a simple diagram or numbered flow.\n\n3. **Explain how the agents catch each other's mistakes, then compile the final answer.** List the specific failure modes and the check that catches each:\n\n   | Failure mode | Check that catches it |\n   |---|---|\n   | Planner writes an ambiguous or incomplete spec | Coder and Tester must list open questions before starting work |\n   | Coder misreads the spec or introduces a bug | Tests written independently from the spec, run by real execution rather than LLM judgment |\n   | Tester writes a wrong or weak test | On failure, the Coder may dispute a test by citing the spec, and the Planner rules on it; mutation testing or coverage checks expose weak suites |\n   | Shared blind spots across all agents | Property-based tests, plus a final Planner review against the acceptance criteria |\n\n   Walk through one short example cycle using the chosen function: a bug is found, the failure is routed back, the fix is made, and the tests pass. Assemble subtasks 1–3 into one coherent final answer with headings for Agents, Handoffs, and Error-Catching. Before submitting, verify that the answer directly covers all three parts of the task: the team design, the handoffs, and mutual error-catching.",
+          "latency_ms": 12520,
+          "source": "live"
+        },
+        {
+          "id": 26,
+          "run_id": 5,
+          "step": 5,
+          "round": 2,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "Step 1: Example function: `parse_duration(s: str) -> int`, which converts strings like \"1h30m\" to seconds (units h, m, s; each used at most once, in descending order).\n\n**Planner**\n- Role: turns the request into a versioned spec and makes the final rulings.\n- Inputs: the user request, plus failure reports and disputes.\n- Outputs: a spec (v1, v2, …) and rulings.\n- Draft system prompt: \"You are the Planner. Write an unambiguous spec: signature, behavior, edge cases, error rules, numbered acceptance criteria. Write no code. Rule on disputes by citing the spec.\"\n- Must never: write or edit code or tests, or change the spec silently without bumping the version.\n\n**Coder**\n- Role: implements the spec.\n- Inputs: the spec and failure reports.\n- Outputs: the code, assumptions, and open questions.\n- Draft system prompt: \"You are the Coder. Implement only the spec. List open questions before coding. Do not see the tests until the first run.\"\n- Must never: add behavior beyond the spec, edit the tests, or guess silently on ambiguity.\n\n**Tester**\n- Role: writes tests from the spec alone.\n- Inputs: the spec, and later the failure reports.\n- Outputs: a test suite with each test tagged by acceptance criterion (AC), plus open questions.\n- Draft system prompt: \"You are the Tester. Write tests from the spec only, before seeing any code. Map every AC to at least one test. Include property-based tests.\"\n- Must never: read the implementation before writing tests, or fit tests to the code.\n\n**Spec for `parse_duration`**\n- Signature: `parse_duration(s: str) -> int`.\n- Behavior: accepts units h, m, s, each at most once, in that order; returns total seconds.\n- Edge cases:\n  - Empty string or whitespace raises `ValueError`.\n  - Invalid units such as \"5x\", a missing number (\"h\"), a trailing number (\"30\"), negatives, or decimals raise `ValueError`.\n  - \"0s\" returns 0.\n  - Very large values are supported, since Python ints are unbounded: \"99999h\" returns 359996400.\n- Error rules: raise only `ValueError`, with a message naming the bad part; a non-str input raises `TypeError`.\n- Acceptance criteria:\n  - AC1: \"1h30m\" returns 5400.\n  - AC2: single units work.\n  - AC3: zero returns 0.\n  - AC4: empty or whitespace input raises `ValueError`.\n  - AC5: invalid units, order, or duplicates raise `ValueError`.\n  - AC6: large values are correct.\n  - AC7: non-str input raises `TypeError`.\n\nStep 2: **Handoffs**\n\nFlow:\n1. User request goes to the Planner.\n2. The Planner sends the spec simultaneously to the Coder and the Tester.\n3. Both reply with open questions. The Planner answers them and bumps the spec version if needed.\n4. The Coder writes the code and the Tester writes the tests, independently and in parallel.\n5. The executor (a real Python runner and test harness, not an LLM) runs the tests against the code and also reports coverage and mutation score.\n6. Results are routed:\n   - Code failure goes to the Coder.\n   - A suspected bad test goes to the Tester, or to the Planner if disputed.\n   - A spec gap goes to the Planner.\n7. Loop until done. The Planner then does a final review against the ACs.\n\nMessage format (JSON): `{\"from\", \"to\", \"spec_version\", \"artifact\", \"assumptions\": [], \"open_questions\": [], \"status\": \"ready|blocked|failed|passed\", \"ac_map\": {\"AC1\": [\"test_x\"]}}`. The failure report adds `failing_tests`, `tracebacks`, and `suspected_owner`.\n\nLoop rules:\n- Maximum 3 revision rounds.\n- Done means all tests pass, every AC maps to at least one test, and the Planner approves.\n\nEscalation:\n- If the Coder disputes a test, the Planner rules by citing the spec.\n- If the spec is found to be ambiguous, the Planner revises it and both agents re-sync to the new version.\n- If the round limit is reached or the Planner cannot resolve a dispute, the issue is flagged to a human with the full message log.\n\nStep 3: **Error-Catching**\n\n| Failure mode | Check that catches it |\n|---|---|\n| Ambiguous or incomplete spec | Coder and Tester list open questions before starting |\n| Coder misreads the spec or has a bug | Independent tests, run by real execution rather than LLM judgment |\n| Weak or wrong test | The Coder may dispute by citing the spec, and the Planner rules; mutation and coverage checks expose weak suites |\n| Shared blind spots | Property-based tests, plus the Planner's final review against the ACs |\n\nExample cycle:\n1. The Coder's first version uses a regex and silently accepts \"30m1h\" (wrong order), returning 5400.\n2. The Tester's AC5 test `test_wrong_order_raises` fails with \"DID NOT RAISE\".\n3. The executor routes the failure report to the Coder, with `suspected_owner: coder` and a citation of the spec's ordering rule.\n4. The Coder fixes it by enforcing the h→m→s order in the pattern, and the spec version is unchanged.\n5. Round 2: all tests pass, the AC map is complete, and mutation score is acceptable.\n6. The Planner's final review confirms AC1–AC7 and the work is done.\n\nCoverage check: the answer covers the team design (Step 1), the handoffs (Step 2), and mutual error-catching (Step 3).",
+          "latency_ms": 13984,
+          "source": "live"
+        },
+        {
+          "id": 27,
+          "run_id": 5,
+          "step": 6,
+          "round": 2,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "APPROVED: The output designs all three agents with roles, inputs, outputs, and prompts. It gives a concrete spec and ACs, and the arithmetic checks out (1h30m = 5400; 99999h = 359,996,400). It defines the handoff flow, JSON message format, loop limits, and escalation path. It also covers error-catching with a worked example. Minor gaps remain, such as no mutation-score threshold and no rule on internal whitespace, but they don't stop the answer from meeting the task.",
+          "latency_ms": 5004,
+          "source": "live"
+        }
+      ],
+      "failures": [
+        {
+          "id": 7,
+          "run_id": 5,
+          "step": 2,
+          "type": "TASK_DRIFT",
+          "severity": 4,
+          "detail": "executor output unrelated to the task"
+        },
+        {
+          "id": 8,
+          "run_id": 5,
+          "step": 2,
+          "type": "INSTRUCTION_DROPPED",
+          "severity": 3,
+          "detail": "executor covered 1/3 planned subtasks"
+        }
+      ]
+    },
+    {
+      "run": {
+        "id": 6,
+        "task": "Explain gradient descent for training a linear regression model.",
+        "mode": "mock",
+        "fault": "truncate",
+        "status": "approved",
+        "score": 85,
+        "created_at": "2026-11-12T08:21:52.062534+00:00",
+        "fault_outcome": "effective",
+        "fault_rounds": 1,
+        "max_rounds": 3
+      },
+      "messages": [
+        {
+          "id": 28,
+          "run_id": 6,
+          "step": 1,
+          "round": 1,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "SUBTASKS:\n1. Research background information about Explain gradient descent for training a linear regression model.\n2. Draft the main solution for Explain gradient descent for training a linear regression model.\n3. Verify and summarise the final result for Explain gradient descent for training a linear regression model.",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 29,
+          "run_id": 6,
+          "step": 2,
+          "round": 1,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "Step 1: completed - Research background information about Explain gradient descent for training a linear regressio",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 30,
+          "run_id": 6,
+          "step": 3,
+          "round": 1,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "REJECTED: only 1 of 3 subtasks completed. Planner must resend the full plan.",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 31,
+          "run_id": 6,
+          "step": 4,
+          "round": 2,
+          "agent": "claude-opus-5-5",
+          "role": "planner",
+          "content": "REVISED PLAN\nSUBTASKS:\n1. Research background information about Explain gradient descent for training a linear regression model.\n2. Draft the main solution for Explain gradient descent for training a linear regression model.\n3. Verify and summarise the final result for Explain gradient descent for training a linear regression model.",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 32,
+          "run_id": 6,
+          "step": 5,
+          "round": 2,
+          "agent": "claude-sonnet-5-5",
+          "role": "executor",
+          "content": "Step 1: completed - Research background information about Explain gradient descent for training a linear regression model.\nStep 2: completed - Draft the main solution for Explain gradient descent for training a linear regression model.\nStep 3: completed - Verify and summarise the final result for Explain gradient descent for training a linear regression model.",
+          "latency_ms": 0,
+          "source": "mock"
+        },
+        {
+          "id": 33,
+          "run_id": 6,
+          "step": 6,
+          "round": 2,
+          "agent": "claude-haiku-5-5",
+          "role": "reviewer",
+          "content": "APPROVED: all subtasks are covered.",
+          "latency_ms": 0,
+          "source": "mock"
+        }
+      ],
+      "failures": [
+        {
+          "id": 9,
+          "run_id": 6,
+          "step": 2,
+          "type": "INSTRUCTION_DROPPED",
+          "severity": 3,
+          "detail": "executor covered 1/3 planned subtasks"
+        }
+      ]
+    }
+  ]
+}
