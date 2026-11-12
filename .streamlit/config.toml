@@ -1,0 +1,12 @@
+# Streamlit theme for the dashboard. Streamlit reads this file automatically when you run
+# `streamlit run frontend/streamlit_app.py` from the project folder.
+[theme]
+base = "dark"
+primaryColor = "#8B5CF6"
+backgroundColor = "#0B0D12"
+secondaryBackgroundColor = "#151922"
+textColor = "#E6E8EE"
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"

@@ -98,6 +98,7 @@ multi-agent-coordination-failure/
 │   ├── database.py           SQLite persistence
 │   └── config.py             settings
 ├── frontend/streamlit_app.py dashboard
+├── .streamlit/config.toml    dashboard theme
 ├── tests/                    pytest suite (see section 15)
 ├── requirements.txt
 └── .env.example              template for API keys and model names
@@ -318,21 +319,38 @@ Never commit `.env`: it contains your keys and is listed in `.gitignore`.
 
 ## 12. Using the dashboard
 
+A dark, card-based dashboard built with Streamlit. The theme is set in `.streamlit/config.toml`.
+The header shows the agent pipeline (Planner → fault injection → Executor → Reviewer).
+
 **Sidebar**
+- **Backend status**: a green dot when the API is reachable. When it's offline, the page says
+  how to start it and the Run button is disabled.
 - **Task**: what the agents should do (5–500 characters).
-- **Inject fault**: one of the five fault modes.
-- **Use live LLM APIs**: off = mock agents, on = real APIs.
-- **Live: use mocks for providers without a key**: allows a `mixed` run instead of an error.
-- **Fault active for N rounds**: `fault_rounds`, from 0 to 3.
+- **Fault to inject**: one of the five fault modes, with a one-line explanation under it.
+- **Fault active for rounds**: `fault_rounds`, from 0 to 3.
 - **Max rounds**: `max_rounds`, from 1 to 5.
+- **Use live LLM APIs**: off = mock agents, on = real APIs.
+- **Allow mock fallback**: in live mode, lets agents without a key run as mocks (`mixed` run).
 
-**After a run** you see five numbers (score, outcome, number of failures, mode, fault outcome),
-the full conversation with each message's round, role, provider and latency, and a table of
-the detected failures.
+**Latest run tab**
+- Badges for status, mode, fault and fault outcome.
+- Four stat cards: score (coloured green / amber / red, with a bar), failures detected,
+  rounds used, and total latency.
+- **Conversation**: every message as a card grouped by round, colour-coded by role
+  (planner violet, executor cyan, reviewer amber). Failures appear as tags on the message that
+  caused them, and a dashed note marks each plan that was corrupted by the fault.
+- **Detected failures**: sorted by severity, with the score calculation written out.
 
-**Aggregate analysis** at the bottom charts all stored runs: how often each failure type
-occurred, and the average score per fault. These charts mix mock and live runs (see
+**History tab**: a table of the last 100 runs with a score bar per run. Pick any run from the
+dropdown to see its full record.
+
+**Analytics tab**: run count, average score, approval rate and "faults resisted" rate, plus
+charts of average score per fault and failures by type. A **Run mode** filter (all / mock /
+live / mixed) keeps live results separate from scripted mock results (see
 [section 16](#16-mock-vs-live-reading-the-results-correctly)).
+
+If the backend runs on another address, set `API_URL` before starting Streamlit, for example
+`API_URL=http://192.168.1.10:8000`.
 
 ## 13. REST API
 
